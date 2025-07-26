@@ -33,9 +33,7 @@ class EmailService {
                 return realEmails;
             } else {
                 console.log(`No real emails found for ${email}`);
-                // Eğer gerçek email yoksa, test email'i gönder
-                await this.sendTestEmail(email);
-                return []; // Boş array döndür, test email'leri gösterme
+                return []; // Boş array döndür
             }
         } catch (error) {
             console.error('Email fetch error:', error);
@@ -87,20 +85,7 @@ class EmailService {
             }));
     }
 
-    async sendTestEmail(email) {
-        try {
-            console.log(`Sending test email to ${email}`);
-            await this.sendEmail(
-                email,
-                'Kendi Mail Sunucumuz Çalışıyor!',
-                'Kendi mail sunucumuz başarıyla kuruldu ve çalışıyor. Gerçek e-postalar artık alınabilir.',
-                '<p>Kendi mail sunucumuz başarıyla kuruldu ve çalışıyor. <strong>Gerçek e-postalar artık alınabilir!</strong></p>'
-            );
-            console.log('Test email sent successfully');
-        } catch (error) {
-            console.error('Test email sending failed:', error);
-        }
-    }
+    // Test e-posta gönderme fonksiyonu kaldırıldı
 
     getTestEmails(email) {
         const now = new Date();

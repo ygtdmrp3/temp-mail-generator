@@ -120,10 +120,10 @@ class TempMailGenerator {
             // Sadece kendi mail sunucumuzu kullan
             let emails = await this.tryCustomMailServer(email);
             
-            // Eğer kendi sunucumuz çalışmazsa, test e-postaları döndür
+            // Eğer kendi sunucumuz çalışmazsa, boş liste döndür
             if (emails.length === 0) {
-                console.log('Kendi mail sunucumuz çalışmadı, test e-postaları döndürülüyor...');
-                emails = this.getTestEmails();
+                console.log('Kendi mail sunucumuz çalışmadı, boş liste döndürülüyor...');
+                return [];
             }
             
             return emails;
@@ -136,7 +136,7 @@ class TempMailGenerator {
                 name: error.name
             });
             this.showNotification(`E-postalar alınırken hata oluştu: ${error.message}`, 'error');
-            return this.getTestEmails();
+            return []; // Hata durumunda da boş liste döndür
         }
     }
 
@@ -223,30 +223,7 @@ class TempMailGenerator {
 
 
 
-    getTestEmails() {
-        return [
-            {
-                id: 'test_1',
-                from: 'noreply@example.com',
-                subject: 'Kendi Mail Sunucumuz Çalışıyor!',
-                preview: 'Kendi mail sunucumuz başarıyla kuruldu ve çalışıyor.',
-                date: new Date().toISOString(),
-                read: false,
-                body: '<p>Kendi mail sunucumuz başarıyla kuruldu! Artık gerçek e-postalar alabilirsiniz.</p>',
-                attachments: []
-            },
-            {
-                id: 'test_2',
-                from: 'system@tempmail.local',
-                subject: 'Sistem Durumu',
-                preview: 'Mail sunucusu aktif ve çalışıyor.',
-                date: new Date(Date.now() - 3600000).toISOString(),
-                read: false,
-                body: '<p>Mail sunucusu aktif ve çalışıyor. Test e-postaları gönderebilirsiniz.</p>',
-                attachments: []
-            }
-        ];
-    }
+    // Test e-postaları kaldırıldı - sadece gerçek e-postalar gösteriliyor
 
     extractTextFromHtml(html) {
         if (!html) return '';
