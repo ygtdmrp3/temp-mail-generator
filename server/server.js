@@ -53,6 +53,7 @@ defaultDomains.forEach(domain => {
 const emailService = new EmailService();
 
 // SMTP Server setup - Always active
+try {
     const smtpServer = new SMTPServer({
         secure: false,
         authOptional: true,
@@ -114,6 +115,10 @@ const emailService = new EmailService();
     smtpServer.listen(SMTP_PORT, () => {
         console.log(`SMTP Server running on port ${SMTP_PORT}`);
     });
+} catch (error) {
+    console.log('SMTP Server failed to start:', error.message);
+    console.log('Continuing without SMTP server...');
+}
 
 // API Routes
 app.get('/api/domains', (req, res) => {
