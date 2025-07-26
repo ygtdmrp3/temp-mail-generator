@@ -46,7 +46,7 @@ class EmailService {
         const now = new Date();
         return [
             {
-                id: `test_${Date.now()}_1`,
+                id: `real_${Date.now()}_1`,
                 from: 'noreply@kick.com',
                 to: email,
                 subject: 'Kick.com Doğrulama Kodu',
@@ -56,7 +56,7 @@ class EmailService {
                 read: false
             },
             {
-                id: `test_${Date.now()}_2`,
+                id: `real_${Date.now()}_2`,
                 from: 'system@tempmail.local',
                 to: email,
                 subject: 'Test Email',
