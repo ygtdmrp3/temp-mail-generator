@@ -138,6 +138,43 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Webhook endpoint for Resend.com
+app.post('/api/webhook', (req, res) => {
+    try {
+        const { type, data } = req.body;
+        
+        if (type === 'email.delivered') {
+            const email = data;
+            const emailId = uuidv4();
+            
+            // Store email in database
+            db.run(
+                'INSERT INTO emails (id, from_address, to_address, subject, body, html_body) VALUES (?, ?, ?, ?, ?, ?)',
+                [
+                    emailId,
+                    email.from,
+                    email.to[0],
+                    email.subject || 'No Subject',
+                    email.text || '',
+                    email.html || ''
+                ],
+                (err) => {
+                    if (err) {
+                        console.error('Database error:', err);
+                    } else {
+                        console.log(`Email stored via webhook: ${emailId} to ${email.to[0]}`);
+                    }
+                }
+            );
+        }
+        
+        res.json({ status: 'OK' });
+    } catch (error) {
+        console.error('Webhook error:', error);
+        res.status(500).json({ error: 'Webhook processing failed' });
+    }
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`API Server running on port ${PORT}`);

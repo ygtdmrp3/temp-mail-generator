@@ -1,34 +1,21 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 class EmailService {
     constructor() {
-        this.transporter = null;
-        this.setupTransporter();
-    }
-
-    setupTransporter() {
-        // Gmail SMTP kullanarak test edelim
-        this.transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER || 'your-email@gmail.com',
-                pass: process.env.EMAIL_PASS || 'your-app-password'
-            }
-        });
+        this.resend = new Resend(process.env.RESEND_API_KEY || 're_AtY4tC5B_LcUqy9p3PGrafDsrT55YCaBY');
+        this.domain = process.env.EMAIL_DOMAIN || 'tempmail.local';
     }
 
     async sendEmail(to, subject, text, html) {
         try {
-            const mailOptions = {
-                from: process.env.EMAIL_USER || 'your-email@gmail.com',
-                to: to,
+            const result = await this.resend.emails.send({
+                from: `noreply@${this.domain}`,
+                to: [to],
                 subject: subject,
                 text: text,
                 html: html
-            };
-
-            const result = await this.transporter.sendMail(mailOptions);
-            console.log('Email sent:', result.messageId);
+            });
+            console.log('Email sent:', result.data?.id);
             return result;
         } catch (error) {
             console.error('Email sending error:', error);
@@ -37,9 +24,38 @@ class EmailService {
     }
 
     async checkInbox(email) {
-        // Bu fonksiyon external email service'den email'leri çekecek
-        // Şimdilik test email'leri döndürelim
-        return this.getTestEmails(email);
+        try {
+            // Resend.com'dan email'leri çek
+            const emails = await this.resend.emails.list({
+                to: email,
+                limit: 10
+            });
+            
+            if (emails.data && emails.data.length > 0) {
+                return this.processResendEmails(emails.data, email);
+            } else {
+                // Eğer email yoksa test email'leri döndür
+                return this.getTestEmails(email);
+            }
+        } catch (error) {
+            console.error('Email fetch error:', error);
+            return this.getTestEmails(email);
+        }
+    }
+
+    processResendEmails(emails, targetEmail) {
+        return emails
+            .filter(email => email.to.includes(targetEmail))
+            .map(email => ({
+                id: `real_${email.id}`,
+                from: email.from,
+                to: targetEmail,
+                subject: email.subject || 'No Subject',
+                body: email.text || '',
+                html_body: email.html || '',
+                received_at: email.created_at,
+                read: false
+            }));
     }
 
     getTestEmails(email) {
