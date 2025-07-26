@@ -25,19 +25,19 @@ class EmailService {
 
     async checkInbox(email) {
         try {
-            // Önce veritabanından gerçek email'leri kontrol et
+            // Sadece veritabanından gerçek email'leri kontrol et
             const realEmails = await this.getRealEmailsFromDatabase(email);
             
             if (realEmails.length > 0) {
                 console.log(`Found ${realEmails.length} real emails for ${email}`);
                 return realEmails;
             } else {
-                console.log(`No real emails found for ${email}, returning test emails`);
-                return this.getTestEmails(email);
+                console.log(`No real emails found for ${email}`);
+                return []; // Boş array döndür, test email'leri gösterme
             }
         } catch (error) {
             console.error('Email fetch error:', error);
-            return this.getTestEmails(email);
+            return []; // Hata durumunda da boş array döndür
         }
     }
 

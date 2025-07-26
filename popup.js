@@ -100,11 +100,7 @@ class TempMailGenerator {
             this.updateInboxDisplay(emails);
             
             if (emails.length > 0) {
-                if (emails[0].id.startsWith('test_')) {
-                    this.showNotification('Test e-postaları gösteriliyor (API erişim sorunu)', 'warning');
-                } else {
-                    this.showNotification(`${emails.length} yeni e-posta alındı!`);
-                }
+                this.showNotification(`${emails.length} yeni e-posta alındı!`);
             } else {
                 this.showNotification('Henüz e-posta yok. E-posta adresinizi kullanarak kayıt olun.', 'info');
             }
