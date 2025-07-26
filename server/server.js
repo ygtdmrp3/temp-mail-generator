@@ -52,8 +52,7 @@ defaultDomains.forEach(domain => {
 // Initialize Email Service
 const emailService = new EmailService();
 
-// SMTP Server setup - Only in development
-if (process.env.NODE_ENV !== 'production') {
+// SMTP Server setup - Always active
     const smtpServer = new SMTPServer({
         secure: false,
         authOptional: true,
@@ -115,9 +114,6 @@ if (process.env.NODE_ENV !== 'production') {
     smtpServer.listen(SMTP_PORT, () => {
         console.log(`SMTP Server running on port ${SMTP_PORT}`);
     });
-} else {
-    console.log('SMTP Server disabled in production (Render.com)');
-}
 
 // API Routes
 app.get('/api/domains', (req, res) => {
