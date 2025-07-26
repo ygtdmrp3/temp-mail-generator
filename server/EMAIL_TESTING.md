@@ -54,7 +54,7 @@ node test-real-email.js smart_demo_4843@deneme.4bey.com
 
 4. **Test e-postası gönder**
    ```bash
-   node test-real-email.js test@tempmail.local
+   node test-real-email.js test@deneme.4bey.com
    ```
 
 ## Beklenen Sonuç

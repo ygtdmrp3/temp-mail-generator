@@ -51,7 +51,7 @@ const email = process.argv[2];
 
 if (!email) {
     console.log('Kullanım: node test-email.js <email@domain.com>');
-    console.log('Örnek: node test-email.js test@tempmail.local');
+    console.log('Örnek: node test-email.js test@deneme.4bey.com');
     process.exit(1);
 }
 

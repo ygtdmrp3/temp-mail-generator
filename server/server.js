@@ -43,8 +43,8 @@ db.serialize(() => {
     )`);
 });
 
-// Insert default domains
-const defaultDomains = ['deneme.4bey.com', 'tempmail.local', 'tempemail.local', 'testmail.local'];
+// Insert default domains - only real domains
+const defaultDomains = ['deneme.4bey.com'];
 defaultDomains.forEach(domain => {
     db.run('INSERT OR IGNORE INTO domains (domain) VALUES (?)', [domain]);
 });
@@ -100,7 +100,7 @@ if (process.env.NODE_ENV !== 'production') {
         },
         onRcptTo(address, session, callback) {
             // Accept all emails for our domains
-            const allowedDomains = ['deneme.4bey.com', 'tempmail.local', 'tempemail.local', 'testmail.local'];
+            const allowedDomains = ['deneme.4bey.com'];
             const domain = address.address.split('@')[1];
             
             if (allowedDomains.includes(domain)) {
