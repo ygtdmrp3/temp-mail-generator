@@ -67,6 +67,7 @@ class TempMailGenerator {
     createRandomEmail() {
         // Kendi mail sunucumuz için domainler
         const domains = [
+            'deneme.4bey.com',
             'tempmail.local',
             'tempemail.local',
             'testmail.local'
