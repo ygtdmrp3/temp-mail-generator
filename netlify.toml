@@ -1,0 +1,72 @@
+[build]
+  publish = "public"
+  command = "echo 'Static site build complete'"
+
+# API redirects to backend
+[[redirects]]
+  from = "/api/*"
+  to = "https://temp-mail-backend.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# Health check redirect
+[[redirects]]
+  from = "/health"
+  to = "https://temp-mail-backend.onrender.com/api/health"
+  status = 200
+
+# CORS headers for API
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+# Content type headers
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/json"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Content-Type = "text/css"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Content-Type = "text/html"
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache headers
+[[headers]]
+  for = "/temp-mail-extension.zip"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000" 

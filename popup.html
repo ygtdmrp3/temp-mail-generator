@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temp Mail Generator</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📧 Temp Mail</h1>
+            <p>Geçici e-posta adresleri oluşturun</p>
+        </header>
+
+        <div class="email-section">
+            <div class="current-email">
+                <label>Mevcut E-posta:</label>
+                <div class="email-display">
+                    <span id="currentEmail">Henüz e-posta oluşturulmadı</span>
+                    <button id="copyEmail" class="copy-btn" title="Kopyala">📋</button>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="generateEmail" class="primary-btn">Yeni E-posta Oluştur</button>
+                <button id="refreshInbox" class="secondary-btn">Gelen Kutusunu Yenile</button>
+            </div>
+        </div>
+
+        <div class="inbox-section">
+            <h3>📥 Gelen Kutusu</h3>
+            <div id="inbox" class="inbox">
+                <div class="empty-state">
+                    <p>Henüz e-posta yok</p>
+                    <small>E-posta adresinizi kullanarak kayıt olun ve e-postaları burada görün</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings">
+            <button id="clearData" class="danger-btn">Tüm Verileri Temizle</button>
+            <button id="debugInfo" class="secondary-btn" style="margin-top: 10px;">Debug Bilgisi</button>
+        </div>
+        
+        <div id="debugPanel" class="debug-panel" style="display: none;">
+            <h4>Debug Bilgileri</h4>
+            <div id="debugContent"></div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html> 

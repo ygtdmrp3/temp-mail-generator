@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Temp Mail Generator",
+  "version": "1.0",
+  "description": "Geçici e-posta adresleri oluşturun ve gelen e-postaları görüntüleyin",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://temp-mail-backend.onrender.com/*",
+    "https://temp-mail-generator.netlify.app/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Temp Mail Generator"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 
