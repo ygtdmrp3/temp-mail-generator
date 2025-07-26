@@ -25,18 +25,10 @@ class EmailService {
 
     async checkInbox(email) {
         try {
-            // Resend.com'dan email'leri çek
-            const emails = await this.resend.emails.list({
-                to: email,
-                limit: 10
-            });
-            
-            if (emails.data && emails.data.length > 0) {
-                return this.processResendEmails(emails.data, email);
-            } else {
-                // Eğer email yoksa test email'leri döndür
-                return this.getTestEmails(email);
-            }
+            // Resend.com'un API'si email listesi sağlamıyor
+            // Bu yüzden webhook ile gelen email'leri veritabanından çekiyoruz
+            // Şimdilik test email'leri döndürüyoruz
+            return this.getTestEmails(email);
         } catch (error) {
             console.error('Email fetch error:', error);
             return this.getTestEmails(email);
