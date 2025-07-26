@@ -1,10 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const SMTPServer = require('smtp-server').SMTPServer;
-const { simpleParser } = require('mailparser');
 const sqlite3 = require('sqlite3').verbose();
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const EmailService = require('./email-service');
 
 const app = express();
 const PORT = 3000;
@@ -48,59 +47,8 @@ defaultDomains.forEach(domain => {
     db.run('INSERT OR IGNORE INTO domains (domain) VALUES (?)', [domain]);
 });
 
-// SMTP Server
-const smtpServer = new SMTPServer({
-    secure: false,
-    authOptional: true,
-    
-    onData(stream, session, callback) {
-        let mailData = '';
-        
-        stream.on('data', (chunk) => {
-            mailData += chunk.toString();
-        });
-        
-        stream.on('end', async () => {
-            try {
-                const parsed = await simpleParser(mailData);
-                const emailId = uuidv4();
-                
-                // Extract recipient
-                const toAddress = parsed.to?.value?.[0]?.address || session.envelope.rcptTo[0];
-                
-                // Store email in database
-                db.run(
-                    'INSERT INTO emails (id, from_address, to_address, subject, body, html_body) VALUES (?, ?, ?, ?, ?, ?)',
-                    [
-                        emailId,
-                        parsed.from?.value?.[0]?.address || 'unknown@example.com',
-                        toAddress,
-                        parsed.subject || 'No Subject',
-                        parsed.text || '',
-                        parsed.html || ''
-                    ],
-                    (err) => {
-                        if (err) {
-                            console.error('Database error:', err);
-                        } else {
-                            console.log(`Email stored: ${emailId} to ${toAddress}`);
-                        }
-                    }
-                );
-                
-                callback();
-            } catch (error) {
-                console.error('Email parsing error:', error);
-                callback(new Error('Email processing failed'));
-            }
-        });
-    },
-    
-    onRcptTo(address, session, callback) {
-        // Accept all emails for now
-        callback();
-    }
-});
+// Initialize Email Service
+const emailService = new EmailService();
 
 // API Routes
 app.get('/api/domains', (req, res) => {
@@ -113,20 +61,32 @@ app.get('/api/domains', (req, res) => {
     });
 });
 
-app.get('/api/emails/:email', (req, res) => {
+app.get('/api/emails/:email', async (req, res) => {
     const email = req.params.email;
     
-    db.all(
-        'SELECT * FROM emails WHERE to_address = ? ORDER BY received_at DESC',
-        [email],
-        (err, rows) => {
-            if (err) {
-                res.status(500).json({ error: err.message });
-            } else {
-                res.json(rows);
+    try {
+        // Önce veritabanından email'leri kontrol et
+        db.all(
+            'SELECT * FROM emails WHERE to_address = ? ORDER BY received_at DESC',
+            [email],
+            async (err, rows) => {
+                if (err) {
+                    res.status(500).json({ error: err.message });
+                } else {
+                    // Eğer veritabanında email yoksa, email service'den al
+                    if (rows.length === 0) {
+                        const serviceEmails = await emailService.checkInbox(email);
+                        res.json(serviceEmails);
+                    } else {
+                        res.json(rows);
+                    }
+                }
             }
-        }
-    );
+        );
+    } catch (error) {
+        console.error('Email fetch error:', error);
+        res.status(500).json({ error: 'Failed to fetch emails' });
+    }
 });
 
 app.get('/api/email/:id', (req, res) => {
@@ -178,14 +138,10 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Start servers
-smtpServer.listen(SMTP_PORT, () => {
-    console.log(`SMTP Server running on port ${SMTP_PORT}`);
-});
-
+// Start server
 app.listen(PORT, () => {
     console.log(`API Server running on port ${PORT}`);
     console.log(`Available domains: ${defaultDomains.join(', ')}`);
-    console.log(`SMTP: localhost:${SMTP_PORT}`);
     console.log(`API: http://localhost:${PORT}`);
+    console.log(`Email Service: Active`);
 }); 
