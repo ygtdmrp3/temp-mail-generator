@@ -99,7 +99,7 @@ class TempMailGenerator {
             if (emails.length > 0) {
                 this.showNotification(`${emails.length} yeni e-posta alındı!`);
             } else {
-                this.showNotification('Henüz e-posta yok. E-posta adresinizi kullanarak kayıt olun.', 'info');
+                this.showNotification('Henüz e-posta yok. Bu e-posta adresine e-posta gönderin.', 'info');
             }
             
         } catch (error) {
@@ -254,7 +254,7 @@ class TempMailGenerator {
             inboxElement.innerHTML = `
                 <div class="empty-state">
                     <p>Henüz e-posta yok</p>
-                    <small>E-posta adresinizi kullanarak kayıt olun ve e-postaları burada görün</small>
+                    <small>Bu e-posta adresine e-posta gönderin ve burada görün</small>
                 </div>
             `;
             return;
