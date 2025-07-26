@@ -87,31 +87,7 @@ class EmailService {
 
     // Test e-posta gönderme fonksiyonu kaldırıldı
 
-    getTestEmails(email) {
-        const now = new Date();
-        return [
-            {
-                id: `real_${Date.now()}_1`,
-                from: 'noreply@kick.com',
-                to: email,
-                subject: 'Kick.com Doğrulama Kodu',
-                body: 'Doğrulama kodunuz: 123456',
-                html_body: '<p>Doğrulama kodunuz: <strong>123456</strong></p>',
-                received_at: now.toISOString(),
-                read: false
-            },
-            {
-                id: `real_${Date.now()}_2`,
-                from: 'system@tempmail.local',
-                to: email,
-                subject: 'Test Email',
-                body: 'Bu bir test email\'idir.',
-                html_body: '<p>Bu bir test email\'idir.</p>',
-                received_at: new Date(now.getTime() - 60000).toISOString(),
-                read: false
-            }
-        ];
-    }
+    // Test e-postaları kaldırıldı - sadece gerçek e-postalar gösteriliyor
 }
 
 module.exports = EmailService; 
