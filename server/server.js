@@ -11,7 +11,12 @@ const PORT = 3000;
 const SMTP_PORT = 2525;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ['chrome-extension://*', 'https://temp-mail-generator.netlify.app'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+}));
 app.use(express.json());
 
 // Database setup

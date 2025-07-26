@@ -50,7 +50,7 @@ class TempMailGenerator {
         try {
             console.log('Kendi mail sunucumuz test ediliyor...');
             
-            const healthResponse = await fetch('https://temp-mail-backend.onrender.com/api/health');
+            const healthResponse = await fetch('https://temp-mail-generator.onrender.com/api/health');
             
             if (healthResponse.ok) {
                 this.showNotification('Kendi mail sunucumuz bağlantısı başarılı!', 'success');
@@ -149,7 +149,7 @@ class TempMailGenerator {
             console.log('Email:', email);
             
             // Netlify + Render backend API'si
-            const apiUrl = `https://temp-mail-backend.onrender.com/api/emails/${encodeURIComponent(email)}`;
+            const apiUrl = `https://temp-mail-generator.onrender.com/api/emails/${encodeURIComponent(email)}`;
             console.log('API URL:', apiUrl);
             
             const response = await fetch(apiUrl, {

@@ -10,7 +10,7 @@
     "notifications"
   ],
   "host_permissions": [
-    "https://temp-mail-backend.onrender.com/*",
+            "https://temp-mail-generator.onrender.com/*",
     "https://temp-mail-generator.netlify.app/*"
   ],
   "action": {
