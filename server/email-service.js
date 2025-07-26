@@ -43,7 +43,8 @@ class EmailService {
 
     async getRealEmailsFromDatabase(email) {
         return new Promise((resolve) => {
-            const db = require('sqlite3').verbose().Database('emails.db');
+            const sqlite3 = require('sqlite3').verbose();
+            const db = new sqlite3.Database('emails.db');
             db.all(
                 'SELECT * FROM emails WHERE to_address = ? ORDER BY received_at DESC LIMIT 10',
                 [email],
