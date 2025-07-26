@@ -25,14 +25,48 @@ class EmailService {
 
     async checkInbox(email) {
         try {
-            // Resend.com'un API'si email listesi sağlamıyor
-            // Bu yüzden webhook ile gelen email'leri veritabanından çekiyoruz
-            // Şimdilik test email'leri döndürüyoruz
-            return this.getTestEmails(email);
+            // Önce veritabanından gerçek email'leri kontrol et
+            const realEmails = await this.getRealEmailsFromDatabase(email);
+            
+            if (realEmails.length > 0) {
+                console.log(`Found ${realEmails.length} real emails for ${email}`);
+                return realEmails;
+            } else {
+                console.log(`No real emails found for ${email}, returning test emails`);
+                return this.getTestEmails(email);
+            }
         } catch (error) {
             console.error('Email fetch error:', error);
             return this.getTestEmails(email);
         }
+    }
+
+    async getRealEmailsFromDatabase(email) {
+        return new Promise((resolve) => {
+            const db = require('sqlite3').verbose().Database('emails.db');
+            db.all(
+                'SELECT * FROM emails WHERE to_address = ? ORDER BY received_at DESC LIMIT 10',
+                [email],
+                (err, rows) => {
+                    if (err) {
+                        console.error('Database error:', err);
+                        resolve([]);
+                    } else {
+                        const emails = rows.map(row => ({
+                            id: `real_${row.id}`,
+                            from: row.from_address,
+                            to: row.to_address,
+                            subject: row.subject,
+                            body: row.body,
+                            html_body: row.html_body,
+                            received_at: row.received_at,
+                            read: row.read === 1
+                        }));
+                        resolve(emails);
+                    }
+                }
+            );
+        });
     }
 
     processResendEmails(emails, targetEmail) {
