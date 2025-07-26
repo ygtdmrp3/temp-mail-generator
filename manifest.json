@@ -10,8 +10,9 @@
     "notifications"
   ],
   "host_permissions": [
-            "https://temp-mail-generator.onrender.com/*",
-    "https://temp-mail-generator.netlify.app/*"
+    "https://temp-mail-generator.onrender.com/*",
+    "https://temp-mail-generator.netlify.app/*",
+    "http://localhost:3000/*"
   ],
   "action": {
     "default_popup": "popup.html",

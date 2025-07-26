@@ -4,6 +4,8 @@ const sqlite3 = require('sqlite3').verbose();
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const EmailService = require('./email-service');
+const SMTPServer = require('smtp-server');
+const { simpleParser } = require('mailparser');
 
 const app = express();
 const PORT = 3000;
@@ -49,6 +51,69 @@ defaultDomains.forEach(domain => {
 
 // Initialize Email Service
 const emailService = new EmailService();
+
+// SMTP Server setup
+const smtpServer = new SMTPServer({
+    secure: false,
+    authOptional: true,
+    onData(stream, session, callback) {
+        let mailData = '';
+        
+        stream.on('data', (chunk) => {
+            mailData += chunk;
+        });
+        
+        stream.on('end', async () => {
+            try {
+                const parsed = await simpleParser(mailData);
+                const emailId = uuidv4();
+                
+                console.log(`Received email: ${parsed.subject} to ${parsed.to.text}`);
+                
+                // Store email in database
+                db.run(
+                    'INSERT INTO emails (id, from_address, to_address, subject, body, html_body) VALUES (?, ?, ?, ?, ?, ?)',
+                    [
+                        emailId,
+                        parsed.from.text,
+                        parsed.to.text,
+                        parsed.subject || 'No Subject',
+                        parsed.text || '',
+                        parsed.html || ''
+                    ],
+                    (err) => {
+                        if (err) {
+                            console.error('Database error storing email:', err);
+                        } else {
+                            console.log(`Email stored: ${emailId} to ${parsed.to.text}`);
+                        }
+                    }
+                );
+                
+                callback();
+            } catch (error) {
+                console.error('Email parsing error:', error);
+                callback();
+            }
+        });
+    },
+    onRcptTo(address, session, callback) {
+        // Accept all emails for our domains
+        const allowedDomains = ['deneme.4bey.com', 'tempmail.local', 'tempemail.local', 'testmail.local'];
+        const domain = address.address.split('@')[1];
+        
+        if (allowedDomains.includes(domain)) {
+            callback();
+        } else {
+            callback(new Error('Domain not allowed'));
+        }
+    }
+});
+
+// Start SMTP server
+smtpServer.listen(SMTP_PORT, () => {
+    console.log(`SMTP Server running on port ${SMTP_PORT}`);
+});
 
 // API Routes
 app.get('/api/domains', (req, res) => {

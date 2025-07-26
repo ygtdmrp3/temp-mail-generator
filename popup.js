@@ -145,8 +145,8 @@ class TempMailGenerator {
             console.log('Kendi mail sunucumuz deneniyor...');
             console.log('Email:', email);
             
-            // Netlify + Render backend API'si
-            const apiUrl = `https://temp-mail-generator.onrender.com/api/emails/${encodeURIComponent(email)}`;
+            // Local development API'si (localhost)
+            const apiUrl = `http://localhost:3000/api/emails/${encodeURIComponent(email)}`;
             console.log('API URL:', apiUrl);
             
             const response = await fetch(apiUrl, {
@@ -176,6 +176,27 @@ class TempMailGenerator {
             
         } catch (error) {
             console.error('Kendi mail sunucumuz hatası:', error);
+            // Eğer localhost çalışmazsa, production API'yi dene
+            try {
+                console.log('Localhost başarısız, production API deneniyor...');
+                const productionApiUrl = `https://temp-mail-generator.onrender.com/api/emails/${encodeURIComponent(email)}`;
+                const productionResponse = await fetch(productionApiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (productionResponse.ok) {
+                    const productionEmails = await productionResponse.json();
+                    if (Array.isArray(productionEmails)) {
+                        console.log(`Found ${productionEmails.length} emails in production server`);
+                        return this.processCustomServerEmails(productionEmails);
+                    }
+                }
+            } catch (productionError) {
+                console.error('Production API hatası:', productionError);
+            }
             return [];
         }
     }
