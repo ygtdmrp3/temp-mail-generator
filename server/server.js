@@ -42,7 +42,7 @@ db.serialize(() => {
 });
 
 // Insert default domains
-const defaultDomains = ['tempmail.local', 'tempemail.local', 'testmail.local'];
+const defaultDomains = ['deneme.4bey.com', 'tempmail.local', 'tempemail.local', 'testmail.local'];
 defaultDomains.forEach(domain => {
     db.run('INSERT OR IGNORE INTO domains (domain) VALUES (?)', [domain]);
 });

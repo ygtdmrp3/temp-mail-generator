@@ -3,7 +3,7 @@ const { Resend } = require('resend');
 class EmailService {
     constructor() {
         this.resend = new Resend(process.env.RESEND_API_KEY || 're_AtY4tC5B_LcUqy9p3PGrafDsrT55YCaBY');
-        this.domain = process.env.EMAIL_DOMAIN || 'tempmail.local';
+        this.domain = process.env.EMAIL_DOMAIN || 'deneme.4bey.com';
     }
 
     async sendEmail(to, subject, text, html) {
